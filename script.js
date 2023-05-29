@@ -467,7 +467,7 @@ function enemy() {
 
         },
         squash() {
-            play("kick");
+            play("stomp");
             this.isAlive = false;
             this.unuse("patrol");
             this.stop();
