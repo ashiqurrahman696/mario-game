@@ -183,7 +183,6 @@ const levelConf = {
         sprite("flower"),
         area(),
         solid(),
-        bump(),
         cleanup(),
         origin("bot"),
         "flower"
