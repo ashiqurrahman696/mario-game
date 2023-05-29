@@ -15,6 +15,7 @@ loadSprite("brick", "brick.png");
 loadSprite("tile", "tile.png");
 loadSprite("coin", "coin.png");
 loadSprite("bigMushy", "bigMushy.png");
+loadSprite("flower", "flower.png");
 loadSprite("pipeTop", "pipeTop.png");
 loadSprite("pipeBottom", "pipeBottom.png");
 loadSprite("shrubbery", "shrubbery.png");
@@ -59,7 +60,7 @@ const LEVELS = [
         "                                                                                             ",
         "                                                                                             ",
         "                                                                                             ",
-        "                                       ?                                                     ",
+        "                                       b                                                     ",
         "                                                                                             ",
         "                                   -?-                                                       ",
         "                                                                                             ",
@@ -177,6 +178,15 @@ const levelConf = {
         lifespan(0.4, { fade: 0.01 }),
         origin("bot"),
         "coin"
+    ],
+    "f": () => [
+        sprite("flower"),
+        area(),
+        solid(),
+        bump(),
+        cleanup(),
+        origin("bot"),
+        "flower"
     ],
     "M": () => [
         sprite("bigMushy"),
@@ -309,30 +319,25 @@ scene("game", (levelNumber = 0) => {
         }
     });
 
-
     player.action(() => {
         // center camera to player
         var currCam = camPos();
         if (currCam.x < player.pos.x) {
             camPos(player.pos.x, currCam.y);
         }
-
         if (player.isAlive && player.grounded()) {
             canSquash = false;
         }
-
         // Check if Mario has fallen off the screen
         if (player.pos.y > height() - 16) {
             killed();
         }
 
     });
-
     let canSquash = false;
-
     player.collides("badGuy", (baddy) => {
-        if (baddy.isAlive == false) return;
-        if (player.isAlive == false) return;
+        if (!baddy.isAlive) return;
+        if (!player.isAlive) return;
         if (canSquash) {
             // Mario has jumped on the bad guy:
             baddy.squash();
@@ -353,7 +358,7 @@ scene("game", (levelNumber = 0) => {
 
     function killed() {
         // Mario is dead :(
-        if (player.isAlive == false) return; // Don't run it if mario is already dead
+        if (!player.isAlive) return; // Don't run it if mario is already dead
         player.die();
         add([
             text("Game Over :(", { size: 24 }),
@@ -376,8 +381,14 @@ scene("game", (levelNumber = 0) => {
                 play("coin");
             }
             else if (obj.is("mushyBox")) {
-                level.spawn("M", obj.gridPos.sub(0, 1));
-                play("itemAppear");
+                if (player.isBig || player.isFlaming){
+                    level.spawn("f", obj.gridPos.sub(0, 1));
+                    play("itemAppear");
+                }
+                else{
+                    level.spawn("M", obj.gridPos.sub(0, 1));
+                    play("itemAppear");
+                }
             }
             var pos = obj.gridPos;
             destroy(obj);
@@ -394,12 +405,13 @@ scene("game", (levelNumber = 0) => {
     
     player.collides("bigMushy", (mushy) => {
         destroy(mushy);
-        if(player.isBig){
-            player.flaming();
-        }
-        else{
-            player.big();
-        }
+        player.big();
+        play("powerUp");
+    });
+
+    player.collides("flower", (flower) => {
+        destroy(flower);
+        player.flaming();
         play("powerUp");
     });
 
@@ -520,7 +532,6 @@ function mario() {
                 this.standing();
                 return;
             }
-
             if (!this.grounded()) {
                 this.jumping();
             }
