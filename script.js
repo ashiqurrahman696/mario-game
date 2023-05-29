@@ -416,7 +416,6 @@ scene("game", (levelNumber = 0) => {
 
     player.collides("castle", (castle, side) => {
         player.freeze();
-        console.log(player.score);
         add([
             text("Well Done!", { size: 24 }),
             pos(toWorld(vec2(160, 120))),
@@ -521,7 +520,6 @@ function mario() {
         smallJumpFrame: 5,
         bigJumpFrame: 13,
         flamingJumpFrame: 22,
-        score: 0,
         isBig: false,
         isFlaming: false,
         isFrozen: false,
