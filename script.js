@@ -103,7 +103,7 @@ const LEVELS = [
         "                                                                                                        ",
         "                                  ? ? ? ? ? b                                                           ",
         "        -?-?-b-                                            _                                            ",
-        "                                                           |    _                                       ",
+        "                                                           |    _    V                                  ",
         "                                                           |    |    _                                  ",
         "                                                           |    |    |    _                             ",
         "           E                            E        E         |    |    |    |       E             H       ",
@@ -221,6 +221,14 @@ const levelConf = {
         origin("bot"),
         "badGuy"
     ],
+    "V": () => [
+        sprite("enemies", { anim: 'Piranha' }),
+        area({ width: 16, height: 16 }),
+        solid(),
+        body(),
+        origin("bot"),
+        "piranha"
+    ],
     "p": () => [
         sprite("mario", { frame: 0 }),
         area({ width: 16, height: 16 }),
@@ -333,6 +341,7 @@ scene("game", (levelNumber = 0) => {
         }
 
     });
+
     let canSquash = false;
     player.collides("badGuy", (baddy) => {
         if (!baddy.isAlive) return;
@@ -352,6 +361,20 @@ scene("game", (levelNumber = 0) => {
                 // Mario is dead :(
                 killed();
             }
+        }
+    });
+    player.collides("piranha", (piranha) => {
+        if (!player.isAlive) return;
+        // Mario has been hurt
+        if (player.isFlaming) {
+            player.big();
+        }
+        else if (player.isBig) {
+            player.small();
+        }
+        else {
+            // Mario is dead :(
+            killed();
         }
     });
 
