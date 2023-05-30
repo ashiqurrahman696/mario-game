@@ -248,7 +248,7 @@ scene("start", () => {
 
 go("start");
 
-scene("game", (levelNumber = 2) => {
+scene("game", (levelNumber = 0) => {
 
     layers([
         "bg",
